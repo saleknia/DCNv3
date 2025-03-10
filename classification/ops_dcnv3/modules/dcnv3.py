@@ -320,6 +320,7 @@ class DCNv3(nn.Module):
         :param query                       (N, H, W, C)
         :return output                     (N, H, W, C)
         """
+        input = to_channels_last(input)
         N, H, W, _ = input.shape
 
         x = self.input_proj(input)
@@ -352,5 +353,5 @@ class DCNv3(nn.Module):
                 1, 1, 1, 1, self.channels // self.group).flatten(-2)
             x = x * (1 - center_feature_scale) + x_proj * center_feature_scale
         x = self.output_proj(x)
-
+        x = to_channels_first(x)
         return x
