@@ -320,7 +320,7 @@ class DCNv3(nn.Module):
         :param query                       (N, H, W, C)
         :return output                     (N, H, W, C)
         """
-        input = to_channels_last(input)
+        input = input.permute(0, 2, 3, 1)
         N, H, W, _ = input.shape
 
         x = self.input_proj(input)
@@ -352,6 +352,5 @@ class DCNv3(nn.Module):
             center_feature_scale = center_feature_scale[..., None].repeat(
                 1, 1, 1, 1, self.channels // self.group).flatten(-2)
             x = x * (1 - center_feature_scale) + x_proj * center_feature_scale
-        x = self.output_proj(x)
-        x = to_channels_first(x)
+        x = self.output_proj(x).permute(0, 3, 1, 2)
         return x
